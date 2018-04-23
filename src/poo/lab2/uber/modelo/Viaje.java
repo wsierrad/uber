@@ -14,8 +14,8 @@ import becker.robots.Intersection;
 public class Viaje {
     private final Intersection origen;
     private final Intersection destino;
-    private double precio;
     private final TipoViaje tipo;
+    private double precio;
 
     public Viaje(Intersection origen, Intersection destino, TipoViaje tipo) {
         this.origen = origen;

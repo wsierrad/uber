@@ -14,10 +14,13 @@ import java.util.Random;
  */
 public class Vehiculo extends RobotSE implements Runnable {
     private boolean state;
+    private ViajeDisponible VD;
     private double ganacias;
+    
 
-    public Vehiculo(City city, int i, int i1, Direction drctn) {
+    public Vehiculo(Uber city, int i, int i1, Direction drctn, ViajeDisponible VD) {
         super(city, i, i1, drctn);
+        state=false;
     }
 
     @Override
@@ -136,4 +139,29 @@ public class Vehiculo extends RobotSE implements Runnable {
             this.move(Math.abs(difX));
         }
     }
+
+    public boolean isState() {
+        return state;
+    }
+
+    public void setState(boolean state) {
+        this.state = state;
+    }
+
+    public ViajeDisponible getVD() {
+        return VD;
+    }
+
+    public void setVD(ViajeDisponible VD) {
+        this.VD = VD;
+    }
+
+    public double getGanacias() {
+        return ganacias;
+    }
+
+    public void setGanacias(double ganacias) {
+        this.ganacias = ganacias;
+    }
+    
 }
