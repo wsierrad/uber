@@ -13,9 +13,9 @@ import java.util.ArrayList;
  * @author willi_000
  */
 public class Uber extends City {
-    private ArrayList<Vehiculo> ubers;
-    private ArrayList<Cliente> clientes;
-    private ArrayList<TipoViaje> tipoViajes;
+    private final ArrayList<Vehiculo> ubers;
+    private final ArrayList<Cliente> clientes;
+    private final ArrayList<TipoViaje> tipoViajes;
     
     public Uber(int i, int i1, int i2, int i3) {
         super(i, i1, i2, i3);
@@ -24,8 +24,8 @@ public class Uber extends City {
         tipoViajes = new ArrayList<>();
     }
     
-    public boolean addUber(int i, int i1, Direction drctn, ViajeDisponible vd){
-        Vehiculo u = new Vehiculo(this, i, i1, drctn,vd);
+    public boolean addUber(int i, int i1, Direction drctn){
+        Vehiculo u = new Vehiculo(this, i, i1, drctn);
         return ubers.add(u);
     }
     
@@ -34,43 +34,37 @@ public class Uber extends City {
         return clientes.add(c);
     }
     
-    /*public boolean updateState(){
-        
-    }*/
-    
-    public synchronized Vehiculo llamarUber(ViajeDisponible vd, Cliente c){
-        Vehiculo uber=null;
-        while (vd.isDisponible() == false){
-                try{ 
-                    wait();
-                }catch (InterruptedException e){}
-        }
-        vd.setDisponible(false);
-        int distance=c.distanceAt(this.ubers.get(0).getAvenue(), 
-                this.ubers.get(0).getStreet());
-        int temp;
-        for (Vehiculo v: this.ubers){
-            temp = c.distanceAt(v.getAvenue(), v.getStreet());
-            if(distance > temp){
-                distance=temp;
-                uber=v;
-            }
-        }
-        vd.setDisponible(true);
-        notifyAll();
-        return uber;
+    public boolean addTipoViajes(double base, double km,double min){
+        TipoViaje t = new TipoViaje(base, km, min);
+        return tipoViajes.add(t);
     }
-    
-    public void genClientes(int i,int x,int y){
-        int j,a=0,b=0,c=0,d=0,e=0;
-        for (j=0;j<i;j++){
-            //e=Vehiculo.numAleatorio(tipoViajes.size());
-            a=Vehiculo.numAleatorio(x);
-            b=Vehiculo.numAleatorio(y);
-            c=Vehiculo.numAleatorio(x);
-            d=Vehiculo.numAleatorio(y);
-            this.addCliente(a, b, c, d, null);
-        }
+   
+    public Vehiculo getUberNear(Cliente c){
+        Vehiculo uberNear=null;
+        try {
+            synchronized(ubers){
+                ArrayList <Vehiculo> ubersDisponibles = new ArrayList<>();
+                for(Vehiculo v :ubers){
+                    if (!v.isState())
+                        ubersDisponibles.add(v);
+                }
+                if(ubersDisponibles.size()<2)
+                    uberNear = ubersDisponibles.get(0);
+                else{
+                    int distance=c.distanceAt(ubersDisponibles.get(0).getAvenue(), 
+                        ubersDisponibles.get(0).getStreet());
+                    int temp;
+                    for (Vehiculo v:ubersDisponibles){
+                        temp = c.distanceAt(v.getAvenue(), v.getStreet());
+                        if(distance > temp){
+                            distance=temp;
+                            uberNear=v;
+                        }
+                    }
+                }
+            }
+        }catch(NullPointerException e){}
+        return uberNear;
     }
 
     public ArrayList<Vehiculo> getUbers() {
@@ -79,6 +73,10 @@ public class Uber extends City {
 
     public ArrayList<Cliente> getClientes() {
         return clientes;
+    }
+
+    public ArrayList<TipoViaje> getTipoViajes() {
+        return tipoViajes;
     }
     
     

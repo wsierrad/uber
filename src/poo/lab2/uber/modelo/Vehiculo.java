@@ -14,46 +14,80 @@ import java.util.Random;
  */
 public class Vehiculo extends RobotSE implements Runnable {
     private boolean state;
-    private ViajeDisponible VD;
+    private Viaje viaje;
     private double ganacias;
     
 
-    public Vehiculo(Uber city, int i, int i1, Direction drctn, ViajeDisponible VD) {
+    public Vehiculo(Uber city, int i, int i1, Direction drctn) {
         super(city, i, i1, drctn);
         state=false;
     }
 
     @Override
     public void run() {
+        do{
+            do{
+            movAle();
+        }while(!state);
+        int xo,yo,xf,yf;
+        //this.viaje.setState("Uber en camino");
+        //System.out.println(viaje.getState());
+        //Viaje viaje = viaje.getViaje();
+        xo=viaje.getOrigen().getAvenue();
+        yo=viaje.getOrigen().getStreet();
+        xf=viaje.getDestino().getAvenue();
+        yf=viaje.getDestino().getStreet();
+        boolean  pp = this.goTo(xo, yo);
+        System.out.println("pp: " + pp);
+        if (pp){
+            //viaje.setState("Uber en punto de partida: " + xo + " " + yo);
+            //System.out.println(viaje.getState());
+            pp=false;
+            if(this.canPickThing()) {
+                System.out.println("Recogiendo pasajero");
+                this.pickThing();
+                pp = this.goTo(xf,yf);
+            }
+        }
+        if (pp){
+            if(this.countThingsInBackpack()>0){
+            this.putThing();
+            //viaje.setState("Uber llego a su destino: " + + xf + " " + yf);
+            //System.out.println(viaje.getState());
+            this.state=false;
+            }
+        }
+        } while(true);
+    }
+    
+    public void movAle(){
         int ale,x,y;
         Direction dir;
-        while(!state){
-            x = this.getAvenue();
-            y = this.getStreet();
-            dir=this.getDirection();
-            ale = Vehiculo.numAleatorio(9);
-            if (dir == Direction.WEST && x/ale==0)
-                this.move(x%ale);
-            else if (dir == Direction.NORTH && y/ale==0)
-                this.move(y%ale);
-            else if (dir == Direction.EAST && (x+ale)>40)
-                this.move(40-x);
-            else if (dir == Direction.SOUTH && (y+ale)>20)
-                this.move(20-y);
-            else this.move(ale);
-            ale = Vehiculo.numAleatorio(5);
-            switch(ale){
-                case 1:
-                case 2:
-                    this.turnRight();
-                    break;
-                case 3:
-                case 4:
-                    this.turnLeft();
-                    break;
-                default:
-                    break;
-            }
+        x = this.getAvenue();
+        y = this.getStreet();
+        dir=this.getDirection();
+        ale = Vehiculo.numAleatorio(9);
+        if (dir == Direction.WEST && x/ale==0)
+            this.move(x%ale);
+        else if (dir == Direction.NORTH && y/ale==0)
+            this.move(y%ale);
+        else if (dir == Direction.EAST && (x+ale)>40)
+            this.move(40-x);
+        else if (dir == Direction.SOUTH && (y+ale)>20)
+            this.move(20-y);
+        else this.move(ale);
+        ale = Vehiculo.numAleatorio(5);
+        switch(ale){
+            case 1:
+            case 2:
+                this.turnRight();
+                break;
+            case 3:
+            case 4:
+                this.turnLeft();
+                break;
+            default:
+                break;
         }
     }
     
@@ -68,7 +102,7 @@ public class Vehiculo extends RobotSE implements Runnable {
         return intAletorio;
     }
     
-    public void goTo(int xf, int yf){
+    public boolean goTo(int xf, int yf){
         int xo = this.getAvenue();
         int yo = this.getStreet();
         int difX =xf-xo, difY =yf-yo;
@@ -138,6 +172,9 @@ public class Vehiculo extends RobotSE implements Runnable {
             }
             this.move(Math.abs(difX));
         }
+        xo = this.getAvenue();
+        yo = this.getStreet();
+        return (xo==xf && yo==yf);
     }
 
     public boolean isState() {
@@ -148,12 +185,12 @@ public class Vehiculo extends RobotSE implements Runnable {
         this.state = state;
     }
 
-    public ViajeDisponible getVD() {
-        return VD;
+    public Viaje getVD() {
+        return viaje;
     }
 
-    public void setVD(ViajeDisponible VD) {
-        this.VD = VD;
+    public void setVD(Viaje VD) {
+        this.viaje = VD;
     }
 
     public double getGanacias() {
