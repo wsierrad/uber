@@ -11,21 +11,22 @@ import javax.imageio.ImageIO;
 
 public class Bicon  extends Icon
 {
-   private String icono;
+   private final String icono;
+
    public Bicon(String icono) {
     this.icono = icono;
    }
     
+   @Override
   public void paintIcon(Graphics g)
   {
     try
     {
       BufferedImage bi = ImageIO.read(new File(this.icono));
-      g.drawImage(bi, 20, 30, 84, 78, 0, 0, 38, 23, null);
+      g.drawImage(bi, 15, 15, 85, 100, 0, 0, 147, 297, null);
     }
     catch (IOException e)
     {
-      e.printStackTrace();
     }
   }
 }

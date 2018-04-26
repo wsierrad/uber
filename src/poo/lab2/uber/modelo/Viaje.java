@@ -16,11 +16,13 @@ public class Viaje {
     private final Intersection destino;
     private final TipoViaje tipo;
     private double precio;
+    private boolean state;
 
     public Viaje(Intersection origen, Intersection destino, TipoViaje tipo) {
         this.origen = origen;
         this.destino = destino;
         this.tipo = tipo;
+        this.state = false;
         calcPrecio();
     }
     
@@ -48,8 +50,12 @@ public class Viaje {
     public TipoViaje getTipo() {
         return tipo;
     }
-    
-    
-    
-    
+
+    public boolean isState() {
+        return state;
+    }
+
+    public void setState(boolean state) {
+        this.state = state;
+    }   
 }

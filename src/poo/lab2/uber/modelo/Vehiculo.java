@@ -16,11 +16,16 @@ public class Vehiculo extends RobotSE implements Runnable {
     private boolean state;
     private Viaje viaje;
     private double ganacias;
+    private String bicon;
+    private double recaudado;
     
-
     public Vehiculo(Uber city, int i, int i1, Direction drctn) {
         super(city, i, i1, drctn);
         state=false;
+        this.setBicon(state);
+        setIcon(new Bicon(bicon));
+        this.recaudado=0;
+        this.ganacias=0;
     }
 
     @Override
@@ -33,12 +38,13 @@ public class Vehiculo extends RobotSE implements Runnable {
         //this.viaje.setState("Uber en camino");
         //System.out.println(viaje.getState());
         //Viaje viaje = viaje.getViaje();
+        this.setBicon(state);
         xo=viaje.getOrigen().getAvenue();
         yo=viaje.getOrigen().getStreet();
         xf=viaje.getDestino().getAvenue();
         yf=viaje.getDestino().getStreet();
         boolean  pp = this.goTo(xo, yo);
-        System.out.println("pp: " + pp);
+        //System.out.println("pp: " + pp);
         if (pp){
             //viaje.setState("Uber en punto de partida: " + xo + " " + yo);
             //System.out.println(viaje.getState());
@@ -52,30 +58,22 @@ public class Vehiculo extends RobotSE implements Runnable {
         if (pp){
             if(this.countThingsInBackpack()>0){
             this.putThing();
+            System.out.println("Viaje completado");
+            viaje.setState(true);
             //viaje.setState("Uber llego a su destino: " + + xf + " " + yf);
             //System.out.println(viaje.getState());
             this.state=false;
+            this.setBicon(state);
+            this.recaudado+=viaje.getPrecio();
             }
         }
         } while(true);
     }
     
     public void movAle(){
-        int ale,x,y;
-        Direction dir;
-        x = this.getAvenue();
-        y = this.getStreet();
-        dir=this.getDirection();
+        int ale;
         ale = Vehiculo.numAleatorio(9);
-        if (dir == Direction.WEST && x/ale==0)
-            this.move(x%ale);
-        else if (dir == Direction.NORTH && y/ale==0)
-            this.move(y%ale);
-        else if (dir == Direction.EAST && (x+ale)>40)
-            this.move(40-x);
-        else if (dir == Direction.SOUTH && (y+ale)>20)
-            this.move(20-y);
-        else this.move(ale);
+        this.moveCant(ale);
         ale = Vehiculo.numAleatorio(5);
         switch(ale){
             case 1:
@@ -88,6 +86,14 @@ public class Vehiculo extends RobotSE implements Runnable {
                 break;
             default:
                 break;
+        }
+    }
+    
+    public void moveCant(int cant){
+        for(int i=0;i<cant;i++){
+            if(this.frontIsClear())
+                this.move();
+            else break;
         }
     }
     
@@ -122,7 +128,7 @@ public class Vehiculo extends RobotSE implements Runnable {
                 }
                         
             }
-            this.move(difY);
+            this.moveCant(Math.abs(difY));
         }else {
             if(d!= Direction.NORTH){
                 switch (d){
@@ -137,7 +143,7 @@ public class Vehiculo extends RobotSE implements Runnable {
                         break;
                 }            
             }
-            this.move(Math.abs(difY));
+            this.moveCant(Math.abs(difY));
         }
         d = this.getDirection();
         if(difX>0){
@@ -155,7 +161,7 @@ public class Vehiculo extends RobotSE implements Runnable {
                 }
                         
             }
-            this.move(difX);
+            this.moveCant(Math.abs(difX));
         }else {
             if(d!= Direction.WEST){
                 switch (d){
@@ -170,7 +176,7 @@ public class Vehiculo extends RobotSE implements Runnable {
                         break;
                 }            
             }
-            this.move(Math.abs(difX));
+            this.moveCant(Math.abs(difX));
         }
         xo = this.getAvenue();
         yo = this.getStreet();
@@ -199,6 +205,35 @@ public class Vehiculo extends RobotSE implements Runnable {
 
     public void setGanacias(double ganacias) {
         this.ganacias = ganacias;
+    }
+
+    private void setBicon(boolean state){
+        String path="image/";
+        if(!state)
+            path += "green";
+        else path += "red";
+        path+=".png";
+        this.bicon = path;
+        this.setIcon(new Bicon(bicon));
+    }
+
+    public double getRecaudado() {
+        return recaudado;
+    }
+
+    public void setRecaudado(double recaudado) {
+        this.recaudado = recaudado;
+    }
+    
+    public void addGanancias(double pago){
+        this.ganacias+=pago;
+    }
+    
+    public String info(){
+        String info="";
+        info+= "El dinero total recaudado es: " + this.recaudado;
+        info+= "\nEl dinero total en ganancias es: " + this.ganacias;
+        return info;
     }
     
 }
